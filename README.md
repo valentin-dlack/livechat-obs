@@ -3,10 +3,14 @@
 RawChat is a simple application that allows users to communicate in real-time using an overlay on OBS linked to Discord.
 Inspired by Cacabox's Livechat, demo available [here](https://www.youtube.com/watch?v=Qs4zvCv1Ir8).
 
-## Quick project demo
-
+## Project demo
 Web view with a sample background on the left, and Discord chat on the right.
+> [!NOTE]  
+> Demo was done during indev, might not reflect final product. (especially in regards to the video display, message timings...)
+> 
+> The gradient background is exclusive to the debugging view - it's transparent in OBS.
 
+https://github.com/user-attachments/assets/6d952134-2d7d-4fb4-a09a-498dffaba764
 
 ## Installation
 
