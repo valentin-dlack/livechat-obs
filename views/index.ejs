@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,10 +18,12 @@
             background: linear-gradient(45deg, #78b1f3, #4264af);
             color: white;
         }
+
         .message {
             position: relative;
             width: 100vw;
-            height: 100vh; /* Changed from 100% to 100vh */
+            height: 100vh;
+            /* Changed from 100% to 100vh */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -28,6 +31,7 @@
             padding: 2vh;
             box-sizing: border-box;
         }
+
         .message-header {
             display: flex;
             flex-direction: column;
@@ -35,6 +39,7 @@
             z-index: 2;
             padding: 2vh;
         }
+
         .avatar {
             width: 4vw;
             height: 4vw;
@@ -45,6 +50,7 @@
             box-shadow: 0 0 10px #00ff00;
             z-index: 2;
         }
+
         .username {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             font-size: 5vh;
@@ -54,22 +60,42 @@
 
         .content {
             width: 100%;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .content p {
             z-index: 2;
             width: 100%;
             text-align: center;
-
             margin-top: auto;
             margin-bottom: 2vh;
-            
-            font-size: 8vw;
+
+            /* Dynamic font sizing based on content length */
+            font-size: min(8vw, calc(15vh / (0.5 + (var(--char-length, 0) / 40))));
+            line-height: 1.2;
+            /*
+            The formula will:
+            - Start with large text for short messages
+            - Gradually decrease font size as message length increases
+            - Keep text within 15% viewport height for optimal viewing
+            - The divisor of 40 can be adjusted to fine-tune the scaling rate
+            */
+
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
             color: black;
             -webkit-text-stroke: 0.15em black;
             -webkit-text-fill-color: white;
             paint-order: stroke fill;
             word-break: break-word;
+
+            /* Enable text wrapping */
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         .attachment {
@@ -83,6 +109,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="messages"></div>
 </body>
@@ -122,6 +149,13 @@
             ${attachmentsHTML}
         `;
 
+        // Add this new code after creating the message element
+        const paragraph = messageElement.querySelector('.content p');
+        if (paragraph) {
+            // Set custom property based on content length
+            paragraph.style.setProperty('--char-length', messageData.content.length);
+        }
+
         messagesContainer.innerHTML = '';
         messagesContainer.appendChild(messageElement);
 
@@ -138,4 +172,5 @@
         console.log('Connexion WebSocket fermée.');
     });
 </script>
+
 </html>
