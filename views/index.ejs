@@ -21,13 +21,14 @@
 
         const messageElement = document.createElement('div');
         messageElement.className = 'message';
+        messageElement.style.display = 'none';
 
         const attachmentsHTML = messageData.attachments
             .map((attachment) => {
                 if (attachment.type.startsWith('image/')) {
                     return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
                 } else if (attachment.type.startsWith('video/')) {
-                    return `<video class="attachment" src="${attachment.url}" style="display:none;" autoplay playsinline style="pointer-events: none;"></video>`;
+                    return `<video class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></video>`;
                 }
                 return '';
             })
@@ -57,8 +58,15 @@
         if (messageElement.querySelector('video')) {
             const videoElement = messageElement.querySelector('video');
             videoElement.addEventListener('canplay', () => {
-                videoElement.style.display = 'block';
+                messageElement.style.display = 'flex';
             });
+        } else if (messageElement.querySelector('img')) {
+            const imageElement = messageElement.querySelector('img');
+            imageElement.addEventListener('load', () => {
+                messageElement.style.display = 'flex';
+            });
+        } else {
+            messageElement.style.display = 'flex';
         }
 
         messagesContainer.innerHTML = '';
