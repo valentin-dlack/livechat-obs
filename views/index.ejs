@@ -14,7 +14,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(45deg, #f3ec78, #af4261);
+            background: linear-gradient(45deg, #78b1f3, #4264af);
             color: white;
         }
         .message {
@@ -25,19 +25,31 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 20px;
+            padding: 2vh;
             box-sizing: border-box;
         }
         .message-header {
             display: flex;
+            flex-direction: column;
             align-items: center;
             z-index: 2;
+            padding: 2vh;
         }
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 4vw;
+            height: 4vw;
+            aspect-ratio: 1;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-bottom: 1vh;
+            border: 0.5vh solid #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            z-index: 2;
+        }
+        .username {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 5vh;
+            color: white;
+            text-shadow: 0 0 1vw #00ff00, 0 0 2vw #00ff00;
         }
 
         .content {
@@ -49,20 +61,15 @@
             text-align: center;
 
             margin-top: auto;
-            padding: 10px;
+            margin-bottom: 2vh;
             
-            font-size: clamp(1rem, 8vw, 4rem);
+            font-size: 8vw;
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
             color: black;
             -webkit-text-stroke: 0.15em black;
-
-            &::before {
-                content: attr(data-content);
-                -webkit-text-fill-color: white;
-                -webkit-text-stroke: 0;
-                position: absolute;
-
-            }
+            -webkit-text-fill-color: white;
+            paint-order: stroke fill;
+            word-break: break-word;
         }
 
         .attachment {
@@ -102,10 +109,13 @@
             .join('');
 
         messageElement.innerHTML = `
+            ${messageData.username ? `
             <div class="message-header">
                 <img class="avatar" src="${messageData.avatar}" alt="${messageData.username}" />
-                <strong>${messageData.username}</strong>
-            </div>
+                <strong class="username">${messageData.username}</strong>
+            </div>` : `
+            <div class="message-header">
+            </div>`}
             <div class="content">
                 <p data-content="${messageData.content}">${messageData.content}</p>
             </div>

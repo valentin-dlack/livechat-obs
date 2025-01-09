@@ -70,6 +70,49 @@ bot.on('messageCreate', (message) => {
             );
         }
     }
+
+    if (message.content.startsWith('!stell')) {
+        const channelId = message.channel.id;
+
+        if (serverData[channelId]) {
+            const newMessage = {
+                username: null, // Set username to null
+                avatar: 'https://example.com/anonymous-avatar.png', // Placeholder avatar URL
+                content: message.content.split(' ').slice(1).join(' '),
+                attachments: message.attachments.map((attachment) => ({
+                    url: attachment.url,
+                    type: attachment.contentType,
+                })),
+            };
+
+            serverData[channelId].messages.push(newMessage);
+
+            if (webSocketClients[channelId]) {
+                webSocketClients[channelId].forEach((ws) => {
+                    ws.send(JSON.stringify(newMessage));
+                });
+            }
+
+            message.channel.send(
+                `Message anonyme ajouté pour le channel **${message.channel.name}**.`
+            );
+        } else {
+            message.channel.send(
+                "Ce channel n'est pas enregistré. Utilisez `!register` pour commencer."
+            );
+        }
+    }
+
+    if (message.content.startsWith('!help')) {
+        const helpMessage = `
+        **Commandes disponibles :**
+        \`!register\` - Enregistrer le channel pour recevoir des messages.
+        \`!tell <message>\` - Envoyer un message avec votre nom d'utilisateur.
+        \`!stell <message>\` - Envoyer un message anonymement.
+        \`!help\` - Afficher ce message d'aide.
+        `;
+        message.channel.send(helpMessage);
+    }
 });
 
 bot.login(process.env.BOT_TOKEN);
