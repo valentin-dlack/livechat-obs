@@ -1,6 +1,7 @@
-# RawChat
+# RawChat 🔈
 
-RawChat is a simple chat application that allows users to communicate in real-time using an overlay on OBS linked to Discord.
+RawChat is a simple application that allows users to communicate in real-time using an overlay on OBS linked to Discord.
+Inspired by Cacabox's Livechat, demo available [here](https://www.youtube.com/watch?v=Qs4zvCv1Ir8).
 
 ## Installation
 
