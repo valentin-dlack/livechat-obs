@@ -39,7 +39,7 @@ bot.on('messageCreate', (message) => {
         );
     }
 
-    if (message.content.startsWith('!setMessage')) {
+    if (message.content.startsWith('!tell')) {
         const channelId = message.channel.id;
 
         if (serverData[channelId]) {
