@@ -27,7 +27,7 @@
                 if (attachment.type.startsWith('image/')) {
                     return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
                 } else if (attachment.type.startsWith('video/')) {
-                    return `<video class="attachment" src="${attachment.url}" controls autoplay></video>`;
+                    return `<video class="attachment" src="${attachment.url}" style="display:none;" autoplay playsinline style="pointer-events: none;"></video>`;
                 }
                 return '';
             })
@@ -54,12 +54,30 @@
             paragraph.style.setProperty('--char-length', messageData.content.length);
         }
 
+        if (messageElement.querySelector('video')) {
+            const videoElement = messageElement.querySelector('video');
+            videoElement.addEventListener('canplay', () => {
+                videoElement.style.display = 'block';
+            });
+        }
+
         messagesContainer.innerHTML = '';
         messagesContainer.appendChild(messageElement);
 
-        setTimeout(() => {
-            messagesContainer.innerHTML = '';
-        }, 10_000);
+        // if the message contains a video, empty the messages container after it has been played
+        if (messageElement.querySelector('video')) {
+            const videoElement = messageElement.querySelector('video');
+            videoElement.addEventListener('ended', () => {
+                messagesContainer.innerHTML = '';
+            });
+        } else {
+            // if the message does not contain a video, empty the messages container after 5 seconds
+            setTimeout(() => {
+                messagesContainer.innerHTML = '';
+            }, 10_000);
+        }
+
+
     });
 
     socket.addEventListener('open', () => {

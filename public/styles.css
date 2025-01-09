@@ -101,3 +101,14 @@ body {
     object-fit: contain;
     z-index: 1;
 }
+
+video.attachment {
+    left: unset;
+    width: unset;
+    max-height: 85vh;
+    right: 1vw;
+}
+
+video.attachment::-webkit-media-controls {
+    display: none;
+}

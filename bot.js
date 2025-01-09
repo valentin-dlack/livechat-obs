@@ -61,9 +61,9 @@ bot.on('messageCreate', (message) => {
                 });
             }
 
-            message.channel.send(
-                `Message ajouté pour le channel **${message.channel.name}**.`
-            );
+            // React to the message with a checkmark emoji
+            message.react('✅');
+
         } else {
             message.channel.send(
                 "Ce channel n'est pas enregistré. Utilisez `!register` pour commencer."
