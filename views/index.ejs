@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue des Messages</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .message {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .message-header {
+            display: flex;
+            align-items: center;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .content {
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        const channelId = "<%= channelId %>";
+        const socket = new WebSocket(`ws://${window.location.hostname}:3000?channelId=${channelId}`);
+
+        socket.addEventListener('message', (event) => {
+            const messageData = JSON.parse(event.data);
+            const messagesContainer = document.getElementById('messages');
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+
+            const attachmentsHTML = messageData.attachments
+                .map((attachment) => {
+                    if (attachment.type.startsWith('image/')) {
+                        return `<img src="${attachment.url}" alt="Image" width="300" autoplay />`;
+                    } else if (attachment.type.startsWith('video/')) {
+                        return `<video src="${attachment.url}" width="300" controls autoplay></video>`;
+                    }
+                    return '';
+                })
+                .join('');
+
+            messageElement.innerHTML = `
+                <div class="message-header">
+                    <img class="avatar" src="${messageData.avatar}" alt="${messageData.username}" />
+                    <strong>${messageData.username}</strong>
+                </div>
+                <div class="content">
+                    <p>${messageData.content}</p>
+                    ${attachmentsHTML}
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageElement);
+        });
+
+        socket.addEventListener('open', () => {
+            console.log('Connexion WebSocket établie.');
+        });
+
+        socket.addEventListener('close', () => {
+            console.log('Connexion WebSocket fermée.');
+        });
+    </script>
+</head>
+<body>
+    <h1>Messages du Channel</h1>
+    <div id="messages"></div>
+</body>
+</html>
