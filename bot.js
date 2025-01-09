@@ -126,6 +126,9 @@ app.get('/view/:channelId', (req, res) => {
     res.render('index', { channelId });
 });
 
+// make it serve the CSS file in the public folder
+app.use(express.static('public'));
+
 const server = app.listen(3000, () =>
     console.log('Serveur web démarré sur le port 3000')
 );
