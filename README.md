@@ -7,7 +7,7 @@ Inspired by Cacabox's Livechat, demo available [here](https://www.youtube.com/wa
 > [!NOTE]  
 > Demo is a live feed from OBS.
 
-https://github.com/user-attachments/assets/6d952134-2d7d-4fb4-a09a-498dffaba764
+https://github.com/user-attachments/assets/c5c3c629-7850-45c6-854d-b7133b03337c
 
 ## Installation
 
