@@ -21,7 +21,7 @@ bot.once('ready', () => {
 bot.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.content.startsWith('!')) {
-        await commandHandler.handle(message);
+        await commandHandler.handle(message, commandHandler.getCommands());
     }
 });
 

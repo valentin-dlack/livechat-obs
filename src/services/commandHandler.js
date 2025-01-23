@@ -19,7 +19,7 @@ class CommandHandler {
      * Handle a message
      * @param {Object} message - The message to handle
      */
-    async handle(message) {
+    async handle(message, commands = []) {
         try {
             const args = await message.content.slice(1).trim().split(/\s+/);
             const commandName = args.shift().toLowerCase();
@@ -27,7 +27,7 @@ class CommandHandler {
             if (!command) {
                 throw new Error(`Command ${commandName} not found`);
             }
-            await command.execute(message, args);
+            await command.execute(message, args, commands);
         } catch (error) {
             console.error(`Error executing command: ${error.message}`);
             await message.reply('Une erreur est survenue lors de l\'exécution de la commande.');
@@ -48,6 +48,17 @@ class CommandHandler {
             this.register(command.name, command);
             console.log(`Command ${command.name} loaded`);
         }
+    }
+
+    /**
+     * Get all commands with name and description
+     * @returns {Array} - An array of commands with name and description
+     */
+    getCommands() {
+        return Array.from(this.commands.entries()).map(([name, command]) => ({
+            name,
+            description: command.description
+        }));
     }
 } 
 

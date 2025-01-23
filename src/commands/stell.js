@@ -1,15 +1,15 @@
 const messageHandler = require('../services/messageHandler');
 
 module.exports = {
-    name: 'tell',
-    description: 'Send a public message (with username and avatar) to the livechat',
+    name: 'stell',
+    description: 'Send an anonymous message to the livechat',
     execute: async (message, args) => {
         const channelId = message.channel.id;
         const guildId = message.guild.id;
 
         const newMessage = {
-            username: message.author.username,
-            avatar: message.author.displayAvatarURL(),
+            username: null,
+            avatar: null,
             content: message.content.split(' ').slice(1).join(' '),
             attachments: message.attachments.map((attachment) => ({
                 url: attachment.url,
