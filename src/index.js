@@ -9,6 +9,7 @@ const bot = new Client({
     intents: config.intents.map(intent => GatewayIntentBits[intent])
 });
 
+
 // Setup command handler
 const commandHandler = new CommandHandler();
 commandHandler.loadCommands(); // This will load all commands from the commands directory
