@@ -127,3 +127,11 @@ video.attachment {
 video.attachment::-webkit-media-controls {
     display: none;
 }
+
+audio.attachment {
+    display: none;
+}
+
+audio.attachment::-webkit-media-controls {
+    display: none;
+}
