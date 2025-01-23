@@ -1,4 +1,5 @@
-const { WebSocketServer } = require("ws");
+import { WebSocketServer } from "ws";
+import stateManager from "./stateManager.js";
 
 class WebSocketService {
     constructor(server) {
@@ -8,7 +9,6 @@ class WebSocketService {
     }
 
     setupConnectionHandler() {
-        const stateManager = require('./stateManager');
 
         this.wss.on('connection', (ws, req) => {
             const params = new URLSearchParams(req.url.split('?')[1]);
@@ -51,4 +51,4 @@ class WebSocketService {
 
 }
 
-module.exports = WebSocketService;
+export default WebSocketService;

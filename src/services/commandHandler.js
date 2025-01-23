@@ -1,3 +1,6 @@
+import { readdirSync } from 'fs';
+import { join } from 'path';
+
 class CommandHandler {
     constructor() {
         this.commands = new Map();
@@ -37,14 +40,13 @@ class CommandHandler {
     /**
      * Load commands from the commands directory (old FS method)
      */
-    loadCommands() {
-        const fs = require('fs');
-        const path = require('path');
-        const commandFiles = fs.readdirSync(path.join(__dirname, '../commands'))
+    async loadCommands() {
+        const __dirname = import.meta.dirname;
+        const commandFiles = readdirSync(join(__dirname, '../commands'))
             .filter(file => file.endsWith('.js'));
         
         for (const file of commandFiles) {
-            const command = require(`../commands/${file}`);
+            const command = await import(`../commands/${file}`);
             this.register(command.name, command);
             console.log(`Command ${command.name} loaded`);
         }
@@ -62,4 +64,4 @@ class CommandHandler {
     }
 } 
 
-module.exports = CommandHandler;
+export default CommandHandler;

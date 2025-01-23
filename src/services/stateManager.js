@@ -24,4 +24,4 @@ class StateManager {
     }
 }
 
-module.exports = new StateManager();
+export default new StateManager();

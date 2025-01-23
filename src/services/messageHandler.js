@@ -1,5 +1,5 @@
-const stateManager = require('./stateManager');
-
+import stateManager from "./stateManager.js";
+import { WebSocket } from "ws";
 class MessageHandler {
     static async handleNewMessage(guildId, channelId, message) {
         // Add message to state
@@ -18,4 +18,4 @@ class MessageHandler {
     }
 }
 
-module.exports = MessageHandler;
+export default MessageHandler;

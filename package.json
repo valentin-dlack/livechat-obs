@@ -2,8 +2,12 @@
   "name": "rawchat",
   "version": "1.0.0",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "prepare": "husky",
+    "precommit": "eslint .",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -15,5 +19,14 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.5",
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.2",
+    "prettier": "^3.4.2"
   }
 }
