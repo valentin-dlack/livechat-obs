@@ -1,5 +1,4 @@
-const express = require('express');
-const path = require('path');
+import express from 'express';
 
 function setupExpressServer() {
     const app = express();
@@ -15,4 +14,4 @@ function setupExpressServer() {
     return app;
 }
 
-module.exports = setupExpressServer;
+export default setupExpressServer;

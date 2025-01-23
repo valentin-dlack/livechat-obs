@@ -1,13 +1,14 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const config = require('./config/config');
-const setupExpressServer = require('./server/express');
-const WebSocketService = require('./services/websocket');
-const CommandHandler = require('./services/commandHandler');
+import { Client, GatewayIntentBits } from 'discord.js';
+import { config } from './config/config.js';
+import setupExpressServer from './server/express.js';
+import WebSocketService from './services/websocket.js';
+import CommandHandler from './services/commandHandler.js';
 
 // Setup Discord bot
 const bot = new Client({
     intents: config.intents.map(intent => GatewayIntentBits[intent])
 });
+
 
 // Setup command handler
 const commandHandler = new CommandHandler();
@@ -32,6 +33,7 @@ const server = app.listen(config.port, () =>
 );
 
 // Initialize WebSocket service
+// eslint-disable-next-line no-unused-vars
 const wsService = new WebSocketService(server);
 
 bot.login(config.botToken);
