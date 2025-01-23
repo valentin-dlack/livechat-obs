@@ -29,12 +29,16 @@
             messageElement.className = 'message';
             messageElement.style.display = 'none';
 
+
             const attachmentsHTML = messageData.attachments
                 .map((attachment) => {
+                    console.log(attachment.type);
                     if (attachment.type.startsWith('image/')) {
                         return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
                     } else if (attachment.type.startsWith('video/')) {
                         return `<video class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></video>`;
+                    } else if (attachment.type.startsWith('audio/')) {
+                        return `<audio class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></audio>`;
                     }
                     return '';
                 })
@@ -69,6 +73,11 @@
             } else if (messageElement.querySelector('img')) {
                 const imageElement = messageElement.querySelector('img');
                 imageElement.addEventListener('load', () => {
+                    messageElement.style.display = 'flex';
+                });
+            } else if (messageElement.querySelector('audio')) {
+                const audioElement = messageElement.querySelector('audio');
+                audioElement.addEventListener('canplay', () => {
                     messageElement.style.display = 'flex';
                 });
             } else {
