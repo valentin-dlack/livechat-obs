@@ -25,6 +25,11 @@
         socket.addEventListener('message', (event) => {
             const messageData = JSON.parse(event.data);
 
+            if (messageData.action === 'stop') {
+                messagesContainer.innerHTML = '';
+                return
+            }
+
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
             messageElement.style.display = 'none';
