@@ -32,7 +32,6 @@
 
             const attachmentsHTML = messageData.attachments
                 .map((attachment) => {
-                    console.log(attachment.type);
                     if (attachment.type.startsWith('image/')) {
                         return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
                     } else if (attachment.type.startsWith('video/')) {
