@@ -97,6 +97,11 @@
                 videoElement.addEventListener('ended', () => {
                     messagesContainer.innerHTML = '';
                 });
+            } else if (messageElement.querySelector('audio')) {
+                const audioElement = messageElement.querySelector('audio');
+                audioElement.addEventListener('ended', () => {
+                    messagesContainer.innerHTML = '';
+                });
             } else {
                 // if the message does not contain a video, empty the messages container after 5 seconds
                 setTimeout(() => {
