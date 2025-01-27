@@ -13,88 +13,117 @@
 </body>
 <script>
     const channelId = "<%= channelId %>";
-    const socket = new WebSocket(`ws://${window.location.hostname}:3000?channelId=${channelId}`);
     const messagesContainer = document.getElementById('messages');
 
-    socket.addEventListener('message', (event) => {
-        const messageData = JSON.parse(event.data);
+    function connectWebSocket() {
+        const socket = new WebSocket(`ws://${window.location.hostname}:3000?channelId=${channelId}`);
+        
+        socket.addEventListener('open', () => {
+            console.log('WebSocket connection established');
+        });
 
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message';
-        messageElement.style.display = 'none';
+        socket.addEventListener('message', (event) => {
+            const messageData = JSON.parse(event.data);
 
-        const attachmentsHTML = messageData.attachments
-            .map((attachment) => {
-                if (attachment.type.startsWith('image/')) {
-                    return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
-                } else if (attachment.type.startsWith('video/')) {
-                    return `<video class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></video>`;
-                }
-                return '';
-            })
-            .join('');
-
-        messageElement.innerHTML = `
-            ${messageData.username ? `
-            <div class="message-header">
-                <img class="avatar" src="${messageData.avatar}" alt="${messageData.username}" />
-                <strong class="username">${messageData.username}</strong>
-            </div>` : `
-            <div class="message-header">
-            </div>`}
-            <div class="content">
-                <p data-content="${messageData.content}">${messageData.content}</p>
-            </div>
-            ${attachmentsHTML}
-        `;
-
-        // Add this new code after creating the message element
-        const paragraph = messageElement.querySelector('.content p');
-        if (paragraph) {
-            // Set custom property based on content length
-            paragraph.style.setProperty('--char-length', messageData.content.length);
-        }
-
-        if (messageElement.querySelector('video')) {
-            const videoElement = messageElement.querySelector('video');
-            videoElement.addEventListener('canplay', () => {
-                messageElement.style.display = 'flex';
-            });
-        } else if (messageElement.querySelector('img')) {
-            const imageElement = messageElement.querySelector('img');
-            imageElement.addEventListener('load', () => {
-                messageElement.style.display = 'flex';
-            });
-        } else {
-            messageElement.style.display = 'flex';
-        }
-
-        messagesContainer.innerHTML = '';
-        messagesContainer.appendChild(messageElement);
-
-        // if the message contains a video, empty the messages container after it has been played
-        if (messageElement.querySelector('video')) {
-            const videoElement = messageElement.querySelector('video');
-            videoElement.addEventListener('ended', () => {
+            if (messageData.action === 'stop') {
                 messagesContainer.innerHTML = '';
-            });
-        } else {
-            // if the message does not contain a video, empty the messages container after 5 seconds
-            setTimeout(() => {
-                messagesContainer.innerHTML = '';
-            }, 10_000);
-        }
+                return
+            }
+
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.style.display = 'none';
 
 
-    });
+            const attachmentsHTML = messageData.attachments
+                .map((attachment) => {
+                    if (attachment.type.startsWith('image/')) {
+                        return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
+                    } else if (attachment.type.startsWith('video/')) {
+                        return `<video class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></video>`;
+                    } else if (attachment.type.startsWith('audio/')) {
+                        return `<audio class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></audio>`;
+                    }
+                    return '';
+                })
+                .join('');
 
-    socket.addEventListener('open', () => {
-        console.log('Connexion WebSocket établie.');
-    });
+            messageElement.innerHTML = `
+                ${messageData.username ? `
+                <div class="message-header">
+                    <img class="avatar" src="${messageData.avatar}" alt="${messageData.username}" />
+                    <strong class="username">${messageData.username}</strong>
+                </div>` : `
+                <div class="message-header">
+                </div>`}
+                <div class="content">
+                    <p data-content="${messageData.content}">${messageData.content}</p>
+                </div>
+                ${attachmentsHTML}
+            `;
 
-    socket.addEventListener('close', () => {
-        console.log('Connexion WebSocket fermée.');
-    });
+            // Add this new code after creating the message element
+            const paragraph = messageElement.querySelector('.content p');
+            if (paragraph) {
+                // Set custom property based on content length
+                paragraph.style.setProperty('--char-length', messageData.content.length);
+            }
+
+            if (messageElement.querySelector('video')) {
+                const videoElement = messageElement.querySelector('video');
+                videoElement.addEventListener('canplay', () => {
+                    messageElement.style.display = 'flex';
+                });
+            } else if (messageElement.querySelector('img')) {
+                const imageElement = messageElement.querySelector('img');
+                imageElement.addEventListener('load', () => {
+                    messageElement.style.display = 'flex';
+                });
+            } else if (messageElement.querySelector('audio')) {
+                const audioElement = messageElement.querySelector('audio');
+                audioElement.addEventListener('canplay', () => {
+                    messageElement.style.display = 'flex';
+                });
+            } else {
+                messageElement.style.display = 'flex';
+            }
+
+            messagesContainer.innerHTML = '';
+            messagesContainer.appendChild(messageElement);
+
+            // if the message contains a video, empty the messages container after it has been played
+            if (messageElement.querySelector('video')) {
+                const videoElement = messageElement.querySelector('video');
+                videoElement.addEventListener('ended', () => {
+                    messagesContainer.innerHTML = '';
+                });
+            } else if (messageElement.querySelector('audio')) {
+                const audioElement = messageElement.querySelector('audio');
+                audioElement.addEventListener('ended', () => {
+                    messagesContainer.innerHTML = '';
+                });
+            } else {
+                // if the message does not contain a video, empty the messages container after 5 seconds
+                setTimeout(() => {
+                    messagesContainer.innerHTML = '';
+                }, 10_000);
+            }
+        });
+
+        socket.addEventListener('close', () => {
+            console.log('WebSocket connection lost. Attempting to reconnect...');
+            // Wait 3 seconds before attempting to reconnect
+            setTimeout(connectWebSocket, 3000);
+        });
+
+        socket.addEventListener('error', (error) => {
+            console.error('WebSocket error:', error);
+            socket.close();
+        });
+
+        return socket;
+    }
+    let socket = connectWebSocket();
 </script>
 
 </html>
