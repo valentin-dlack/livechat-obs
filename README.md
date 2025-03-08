@@ -1,6 +1,6 @@
 # Livechat OBS
 
-Livechat OBS is a professional real-time chat overlay solution for OBS, seamlessly integrating Discord messages into your streams. Inspired by Cacabox's Livechat ([demo](https://www.youtube.com/watch?v=Qs4zvCv1Ir8)), it provides a modern and customizable way to display chat messages in your broadcasts.
+Livechat OBS is a real-time chat overlay solution for OBS, seamlessly integrating Discord messages into your streams. Inspired by Cacabox's Livechat ([demo](https://www.youtube.com/watch?v=Qs4zvCv1Ir8)), it provides a modern and customizable way to display chat messages in your broadcasts.
 
 ## Features
 
