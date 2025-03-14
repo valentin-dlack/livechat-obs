@@ -11,6 +11,8 @@ function setupExpressServer() {
         res.render('index', { channelId });
     });
 
+    // salut trop cool
+
     return app;
 }
 
