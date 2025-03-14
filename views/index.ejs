@@ -14,6 +14,7 @@
 <script>
     const channelId = "<%= channelId %>";
     const messagesContainer = document.getElementById('messages');
+    let contentTimer;
 
     function connectWebSocket() {
         const socket = new WebSocket(`ws://${window.location.hostname}:3000?channelId=${channelId}`);
@@ -29,6 +30,11 @@
                 messagesContainer.innerHTML = '';
                 return
             }
+
+            // if a Timer is already set, clear it before loading new content.
+            if (contentTimer != null) {
+                clearTimeout(contentTimer)
+            }   
 
             const messageElement = document.createElement('div');
             messageElement.className = 'message';
@@ -102,11 +108,12 @@
                 audioElement.addEventListener('ended', () => {
                     messagesContainer.innerHTML = '';
                 });
-            } else {
-                // if the message does not contain a video, empty the messages container after 5 seconds
-                setTimeout(() => {
+            } else {      
+                // if the message does not contain a video, empty the messages container after 10 seconds
+                contentTimer = setTimeout(() => {
                     messagesContainer.innerHTML = '';
                 }, 10_000);
+                
             }
         });
 
