@@ -1,15 +1,18 @@
+import { SlashCommandBuilder } from 'discord.js';
 import messageHandler from '../services/messageHandler.js';
 
-export const name = 'stop';
-export const description = 'Stop any occuring livechat';
-export async function execute(message) {
-    const channelId = message.channel.id;
-    const guildId = message.guild.id;
+export const data = new SlashCommandBuilder()
+    .setName('stop')
+    .setDescription('Stop any occuring livechat');
+
+export async function execute(interaction) {
+    const channelId = interaction.channel.id;
+    const guildId = interaction.guild.id;
 
     const newMessage = {
         action: "stop"
     };
 
     await messageHandler.handleNewMessage(guildId, channelId, newMessage);
-    await message.react('✅');
+    await interaction.reply('Current livechat stopped ✅');
 }

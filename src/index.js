@@ -22,7 +22,13 @@ bot.once('ready', () => {
 bot.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     if (message.content.startsWith('!')) {
-        await commandHandler.handle(message, commandHandler.getCommands());
+        await commandHandler.handle(message);
+    }
+});
+
+bot.on('interactionCreate', async (interaction) => {
+    if (interaction.isCommand()) {
+        await commandHandler.handle(interaction);
     }
 });
 

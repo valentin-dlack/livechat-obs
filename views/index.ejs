@@ -40,11 +40,11 @@
             messageElement.className = 'message';
             messageElement.style.display = 'none';
 
-
-            const attachmentsHTML = messageData.attachments
-                .map((attachment) => {
-                    if (attachment.type.startsWith('image/')) {
-                        return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
+            if (messageData.attachments) {
+                attachmentsHTML = messageData.attachments
+                    .map((attachment) => {
+                        if (attachment.type.startsWith('image/')) {
+                            return `<img class="attachment" src="${attachment.url}" alt="Image" />`;
                     } else if (attachment.type.startsWith('video/')) {
                         return `<video class="attachment" src="${attachment.url}" autoplay playsinline style="pointer-events: none;"></video>`;
                     } else if (attachment.type.startsWith('audio/')) {
@@ -53,7 +53,10 @@
                     return '';
                 })
                 .join('');
-
+            } else {
+                attachmentsHTML = '';
+            }
+            
             messageElement.innerHTML = `
                 ${messageData.username ? `
                 <div class="message-header">
