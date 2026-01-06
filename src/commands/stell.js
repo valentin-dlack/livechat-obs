@@ -28,7 +28,7 @@ export async function execute(interaction) {
     const newMessage = {
         username: null,
         avatar: null,
-        content: interaction.options.getString('message'),  
+        content: interaction.options.getString('message') || ' ',  
         attachments: attachments,
     };
 

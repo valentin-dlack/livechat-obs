@@ -15,7 +15,7 @@ const commandHandler = new CommandHandler();
 commandHandler.loadCommands(); // This will load all commands from the commands directory
 
 // Bot event handlers
-bot.once('ready', () => {
+bot.once('clientReady', () => {
     console.log(`Bot connecté en tant que ${bot.user.tag}`);
 });
 
