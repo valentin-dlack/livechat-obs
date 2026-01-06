@@ -12,8 +12,10 @@ describe('CommandHandler', () => {
     describe('register', () => {
         it('should register a valid command', () => {
             const mockCommand = {
-                name: 'test',
-                description: 'Test command',
+                data: {
+                    name: 'test',
+                    description: 'Test command'
+                },
                 execute: jest.fn()
             };
 
@@ -23,8 +25,10 @@ describe('CommandHandler', () => {
 
         it('should throw error when registering invalid command', () => {
             const invalidCommand = {
-                name: 'test',
-                description: 'Test command'
+                data: {
+                    name: 'test',
+                    description: 'Test command'
+                }
                 // Missing execute function
             };
 
@@ -38,43 +42,71 @@ describe('CommandHandler', () => {
         it('should execute a valid command', async () => {
             const mockExecute = jest.fn();
             const mockCommand = {
-                name: 'test',
-                description: 'Test command',
+                data: {
+                    name: 'test',
+                    description: 'Test command'
+                },
                 execute: mockExecute
             };
 
-            const mockMessage = {
-                content: '!test arg1 arg2',
+            const mockInteraction = {
+                commandName: 'test',
                 reply: jest.fn()
             };
 
             commandHandler.register('test', mockCommand);
-            await commandHandler.handle(mockMessage);
+            await commandHandler.handle(mockInteraction);
 
-            expect(mockExecute).toHaveBeenCalledWith(mockMessage, ['arg1', 'arg2'], []);
+            expect(mockExecute).toHaveBeenCalledWith(mockInteraction, expect.any(Array));
         });
 
         it('should handle non-existent command', async () => {
-            const mockMessage = {
-                content: '!nonexistent',
+            const mockInteraction = {
+                commandName: 'nonexistent',
                 reply: jest.fn()
             };
 
-            await commandHandler.handle(mockMessage);
-            expect(mockMessage.reply).toHaveBeenCalledWith('Une erreur est survenue lors de l\'exécution de la commande.');
+            await commandHandler.handle(mockInteraction);
+            // Should not call reply since command doesn't exist (just logs error)
+            expect(mockInteraction.reply).not.toHaveBeenCalled();
+        });
+
+        it('should handle command execution error', async () => {
+            const mockExecute = jest.fn().mockRejectedValue(new Error('Test error'));
+            const mockCommand = {
+                data: {
+                    name: 'test',
+                    description: 'Test command'
+                },
+                execute: mockExecute
+            };
+
+            const mockInteraction = {
+                commandName: 'test',
+                reply: jest.fn()
+            };
+
+            commandHandler.register('test', mockCommand);
+            await commandHandler.handle(mockInteraction);
+
+            expect(mockInteraction.reply).toHaveBeenCalledWith('Une erreur est survenue lors de l\'exécution de la commande.');
         });
     });
 
     describe('getCommands', () => {
         it('should return list of registered commands', () => {
             const mockCommand1 = {
-                name: 'test1',
-                description: 'Test command 1',
+                data: {
+                    name: 'test1',
+                    description: 'Test command 1'
+                },
                 execute: jest.fn()
             };
             const mockCommand2 = {
-                name: 'test2',
-                description: 'Test command 2',
+                data: {
+                    name: 'test2',
+                    description: 'Test command 2'
+                },
                 execute: jest.fn()
             };
 

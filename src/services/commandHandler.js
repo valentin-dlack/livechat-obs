@@ -1,9 +1,11 @@
+import { Collection, REST, Routes } from 'discord.js';
 import { readdirSync } from 'fs';
 import { join } from 'path';
+import { config } from '../config/config.js';
 
 class CommandHandler {
     constructor() {
-        this.commands = new Map();
+        this.commands = new Collection();
     }
 
     /**
@@ -19,21 +21,21 @@ class CommandHandler {
     }
 
     /**
-     * Handle a message
+     * Handle a message -- LEGACY FUNCTION
      * @param {Object} message - The message to handle
      */
-    async handle(message, commands = []) {
+    async handle(interaction) {
+        const command = this.commands.get(interaction.commandName);
+        if (!command) {
+            console.error(`Command ${interaction.commandName} not found`);
+            return;
+        }
+
         try {
-            const args = await message.content.slice(1).trim().split(/\s+/);
-            const commandName = args.shift().toLowerCase();
-            const command = this.commands.get(commandName);
-            if (!command) {
-                throw new Error(`Command ${commandName} not found`);
-            }
-            await command.execute(message, args, commands);
+            await command.execute(interaction, this.getCommands());
         } catch (error) {
             console.error(`Error executing command: ${error.message}`);
-            await message.reply('Une erreur est survenue lors de l\'exécution de la commande.');
+            await interaction.reply('Une erreur est survenue lors de l\'exécution de la commande.');
         }
     }
 
@@ -47,8 +49,38 @@ class CommandHandler {
         
         for (const file of commandFiles) {
             const command = await import(`../commands/${file}`);
-            this.register(command.name, command);
-            console.log(`Command ${command.name} loaded`);
+            this.register(command.data.name, command);
+            console.log(`Command ${command.data.name} loaded`);
+        }
+
+        await this.registerCommands();
+    }
+
+    /**
+     * Register slash commands to discord API
+     */
+    async registerCommands() {
+        const commands = [];
+
+        for (const command of this.commands.values()) {
+            commands.push(command.data.toJSON());
+        }
+
+        console.log(`Registering ${this.commands.size} commands in ${config.env} environment`);
+        const rest = new REST().setToken(config.botToken);
+
+        if (config.env === 'dev') {
+            const data = await rest.put(
+                Routes.applicationGuildCommands(config.botClientId, config.botGuildId),
+                { body: commands }
+            );
+            console.log(`Successfully registered ${data.length} commands in ${config.env} environment`);
+        } else {
+            const data = await rest.put(
+                Routes.applicationCommands(config.botClientId),
+                { body: commands }
+            );
+            console.log(`Successfully registered ${data.length} commands in ${config.env} environment`);
         }
     }
 
@@ -59,7 +91,7 @@ class CommandHandler {
     getCommands() {
         return Array.from(this.commands.entries()).map(([name, command]) => ({
             name,
-            description: command.description
+            description: command.data.description
         }));
     }
 } 

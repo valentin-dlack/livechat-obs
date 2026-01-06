@@ -118,10 +118,8 @@ body {
 }
 
 video.attachment {
-    left: unset;
-    width: unset;
     max-height: 85vh;
-    right: 1vw;
+    max-width: 100%;
 }
 
 video.attachment::-webkit-media-controls {
