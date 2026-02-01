@@ -2,6 +2,7 @@ class StateManager {
     constructor() {
         this.registeredServers = new Map();
         this.webSocketClients = new Map();
+        this.paintWebSocketClients = new Map();
     }
 
     registerChannel(guildId, channelId) {

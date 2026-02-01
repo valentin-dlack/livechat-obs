@@ -4,17 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rawchat</title>
+    <title>LiveChat</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
+    <div id="paintOverlay" class="paint-overlay hidden">
+        <div class="paint-overlay-timer" id="paintOverlayTimer">2:30</div>
+        <div class="paint-overlay-frame">
+            <canvas id="paintOverlayCanvas"></canvas>
+        </div>
+    </div>
     <div id="messages"></div>
 </body>
 <script>
     const channelId = "<%= channelId %>";
     const messagesContainer = document.getElementById('messages');
+    const paintOverlay = document.getElementById('paintOverlay');
+    const paintOverlayCanvas = document.getElementById('paintOverlayCanvas');
+    const paintOverlayCtx = paintOverlayCanvas.getContext('2d');
+    const paintOverlayTimer = document.getElementById('paintOverlayTimer');
     let contentTimer;
+    let paintSessionActive = false;
+    let paintTimerInterval = null;
+    let paintEndTime = null;
 
     function connectWebSocket() {
         const socket = new WebSocket(`ws://${window.location.hostname}:3000?channelId=${channelId}`);
@@ -25,6 +38,11 @@
 
         socket.addEventListener('message', (event) => {
             const messageData = JSON.parse(event.data);
+
+            if (messageData.type && messageData.type.startsWith('paint:')) {
+                handlePaintMessage(messageData);
+                return;
+            }
 
             if (messageData.action === 'stop') {
                 messagesContainer.innerHTML = '';
@@ -134,6 +152,107 @@
         return socket;
     }
     let socket = connectWebSocket();
+
+    function resizePaintOverlay() {
+        if (!paintOverlay) return;
+        const rect = paintOverlayCanvas.getBoundingClientRect();
+        const ratio = window.devicePixelRatio || 1;
+        paintOverlayCanvas.width = rect.width * ratio;
+        paintOverlayCanvas.height = rect.height * ratio;
+        paintOverlayCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    function drawOverlayStroke(stroke) {
+        const rect = paintOverlayCanvas.getBoundingClientRect();
+        const points = stroke.points || [];
+        if (points.length < 2) return;
+
+        const lineWidth = stroke.widthRatio
+            ? stroke.widthRatio * rect.width
+            : (stroke.width || 3);
+
+        paintOverlayCtx.lineWidth = lineWidth;
+        paintOverlayCtx.lineCap = 'round';
+        paintOverlayCtx.lineJoin = 'round';
+        paintOverlayCtx.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
+        paintOverlayCtx.strokeStyle = stroke.tool === 'eraser' ? '#000000' : (stroke.color || '#000000');
+
+        paintOverlayCtx.beginPath();
+        paintOverlayCtx.moveTo(points[0].x * rect.width, points[0].y * rect.height);
+        paintOverlayCtx.lineTo(points[1].x * rect.width, points[1].y * rect.height);
+        paintOverlayCtx.stroke();
+        paintOverlayCtx.beginPath();
+        paintOverlayCtx.globalCompositeOperation = 'source-over';
+    }
+
+    function showPaintOverlay() {
+        paintOverlay.classList.remove('hidden');
+        paintSessionActive = true;
+        resizePaintOverlay();
+    }
+
+    function hidePaintOverlay() {
+        paintOverlay.classList.add('hidden');
+        paintSessionActive = false;
+        paintOverlayCtx.clearRect(0, 0, paintOverlayCanvas.width, paintOverlayCanvas.height);
+        if (paintTimerInterval) {
+            clearInterval(paintTimerInterval);
+            paintTimerInterval = null;
+        }
+        paintEndTime = null;
+    }
+
+    function formatTime(ms) {
+        const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = String(totalSeconds % 60).padStart(2, '0');
+        return `${minutes}:${seconds}`;
+    }
+
+    function startPaintTimer(timeRemaining) {
+        paintEndTime = Date.now() + (timeRemaining || 0);
+        if (paintTimerInterval) {
+            clearInterval(paintTimerInterval);
+        }
+        paintTimerInterval = setInterval(() => {
+            const remaining = paintEndTime - Date.now();
+            if (remaining <= 0) {
+                paintOverlayTimer.textContent = '0:00';
+                return;
+            }
+            paintOverlayTimer.textContent = formatTime(remaining);
+        }, 250);
+    }
+
+    function handlePaintMessage(messageData) {
+        if (!paintSessionActive && (messageData.type === 'paint:init' || messageData.type === 'paint:stroke')) {
+            showPaintOverlay();
+        }
+
+        if (messageData.type === 'paint:init') {
+            paintOverlayCtx.clearRect(0, 0, paintOverlayCanvas.width, paintOverlayCanvas.height);
+            if (Array.isArray(messageData.strokes)) {
+                messageData.strokes.forEach(drawOverlayStroke);
+            }
+            if (typeof messageData.timeRemaining === 'number') {
+                startPaintTimer(messageData.timeRemaining);
+            }
+        }
+
+        if (messageData.type === 'paint:stroke') {
+            drawOverlayStroke(messageData.stroke);
+        }
+
+        if (messageData.type === 'paint:clear') {
+            paintOverlayCtx.clearRect(0, 0, paintOverlayCanvas.width, paintOverlayCanvas.height);
+        }
+
+        if (messageData.type === 'paint:end') {
+            hidePaintOverlay();
+        }
+    }
+
+    window.addEventListener('resize', resizePaintOverlay);
 </script>
 
 </html>

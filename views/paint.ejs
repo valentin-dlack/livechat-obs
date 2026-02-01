@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveChat - Live Paint !</title>
+    <link rel="stylesheet" href="/paint.css">
+</head>
+<body class="paint-page" data-session-id="<%= sessionId %>" data-time-remaining="<%= session.timeRemaining %>">
+    <div class="paint-shell">
+        <header class="paint-header">
+            <div class="paint-title">
+                🎨 Live Paint Session
+                <span class="paint-id">(<%= sessionId %>)</span>
+                <span class="message-info">J'ai pas réussi a faire marcher la gomme :(</span>
+            </div>
+            <div class="paint-timer">
+                Temps restant : <span id="timeRemaining"></span>
+            </div>
+        </header>
+
+        <section class="paint-toolbar">
+            <div class="tool-group">
+                <span class="tool-label">Couleurs</span>
+                <div class="color-palette" id="colorPalette"></div>
+            </div>
+
+            <div class="tool-group">
+                <span class="tool-label">Taille</span>
+                <input id="brushSize" type="range" min="2" max="18" value="5" />
+                <span class="size-value" id="sizeValue">5</span>
+            </div>
+
+            <div class="tool-group">
+                <button id="eraserToggle" class="tool-button" type="button">Gomme</button>
+                <button id="clearCanvas" class="tool-button" type="button">Effacer tout</button>
+            </div>
+        </section>
+
+        <main class="paint-canvas-wrap">
+            <div class="paint-canvas-frame">
+                <canvas id="paintCanvas"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <script src="/paint.js"></script>
+</body>
+</html>

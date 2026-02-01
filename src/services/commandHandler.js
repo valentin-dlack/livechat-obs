@@ -4,8 +4,9 @@ import { join } from 'path';
 import { config } from '../config/config.js';
 
 class CommandHandler {
-    constructor() {
+    constructor({ paintSessionManager }) {
         this.commands = new Collection();
+        this.paintSessionManager = paintSessionManager;
     }
 
     /**
@@ -32,7 +33,7 @@ class CommandHandler {
         }
 
         try {
-            await command.execute(interaction, this.getCommands());
+            await command.execute(interaction, this.getCommands(), this.paintSessionManager);
         } catch (error) {
             console.error(`Error executing command: ${error.message}`);
             await interaction.reply('Une erreur est survenue lors de l\'exécution de la commande.');

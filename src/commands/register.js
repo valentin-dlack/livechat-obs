@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import stateManager from '../services/stateManager.js';
+import { config } from '../config/config.js';
 
 export const data = new SlashCommandBuilder()
     .setName('register')
@@ -13,6 +14,6 @@ export async function execute(interaction) {
 
     await interaction.reply(
         `Channel **${interaction.channel.name}** enregistré pour le serveur **${interaction.guild.name}**.`
-        + `\n\nLien OBS: http://<IP>:3000/view/${channelId}`
+        + `\n\nLien OBS: http://${config.ip_site}:3000/view/${channelId}`
     );
 }
