@@ -1,4 +1,5 @@
 import express from 'express';
+import paintSession from '../services/paintSession.js';
 
 function setupExpressServer() {
     const app = express();
@@ -11,8 +12,17 @@ function setupExpressServer() {
         res.render('index', { channelId });
     });
 
-    // salut trop cool
+    app.get('/paint/:sessionId', (req, res) => {
+        const sessionId = req.params.sessionId;
+        const session = paintSession.getSession(sessionId);
 
+        if (!session || !session.isActive) {
+            return res.status(404).send('Session inexistante ou terminée.');
+        }
+
+        res.render('paint', { sessionId, session });
+    });
+    
     return app;
 }
 

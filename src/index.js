@@ -3,6 +3,7 @@ import { config } from './config/config.js';
 import setupExpressServer from './server/express.js';
 import WebSocketService from './services/websocket.js';
 import CommandHandler from './services/commandHandler.js';
+import paintSessionManager from './services/paintSession.js';
 
 // Setup Discord bot
 const bot = new Client({
@@ -11,7 +12,7 @@ const bot = new Client({
 
 
 // Setup command handler
-const commandHandler = new CommandHandler();
+const commandHandler = new CommandHandler({ paintSessionManager });
 commandHandler.loadCommands(); // This will load all commands from the commands directory
 
 // Bot event handlers
