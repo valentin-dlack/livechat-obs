@@ -184,10 +184,8 @@ brushSizeInput.addEventListener('input', () => {
     sizeValue.textContent = brushSizeInput.value;
 });
 
-eraserToggle.addEventListener('click', () => {
-    isEraser = !isEraser;
-    eraserToggle.classList.toggle('active', isEraser);
-});
+eraserToggle.disabled = true;
+eraserToggle.classList.add('disabled');
 
 clearCanvas.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -62,7 +62,7 @@ export async function execute(interaction, commands, paintSessionManager) {
         return interaction.reply({ content: `⚠️ Impossible de démarrer une nouvelle session.`, ephemeral: true });
     }
 
-    const paintUrl = `http://<IP>:${config.port}/paint/${sessionInfo.sessionId}`;
+    const paintUrl = `http://${config.ip_site}:${config.port}/paint/${sessionInfo.sessionId}`;
 
     const embed = new EmbedBuilder()
         .setTitle('Session de peinture collaborative démarrée')
@@ -70,7 +70,7 @@ export async function execute(interaction, commands, paintSessionManager) {
             + `Cliquez [ici](${paintUrl}) pour rejoindre la session et commencer à peindre ensemble.`)
         .addFields(
             { name: 'Durée', value: '2 min 30', inline: true },
-            { name: 'Lien OBS', value: `http://<IP>:3000/view/${channelId}`, inline: true }
+            { name: 'Lien OBS', value: `http://${config.ip_site}:3000/view/${channelId}`, inline: true }
         )
         .setColor(0x00ff00)
         .setTimestamp();
