@@ -6,7 +6,7 @@ const MAX_PARTICIPANTS = 15;
 class PaintSessionManager {
     constructor() {
         this.sessions = new Map(); // sessionId → SessionData
-        this.channelSessions = new Map(); // channelId → sessionId (pour éviter les doublons)
+        this.channelSessions = new Map(); // channelId → sessionId 
     }
 
     /**
@@ -73,7 +73,6 @@ class PaintSessionManager {
     getSessionByChannel(channelId) {
         const sessionId = this.channelSessions.get(channelId);
         if (!sessionId) return null;
-        console.log(this.getSession(sessionId));
         return this.getSession(sessionId);
     }
 
@@ -112,7 +111,7 @@ class PaintSessionManager {
      */
     addStroke(sessionId, strokeData) {
         const session = this.sessions.get(sessionId);
-        if (!session || !session.isActive) return false;
+        if (!session || !session.isActive) return null;
 
         const stroke = {
             id: randomUUID(),
@@ -120,10 +119,23 @@ class PaintSessionManager {
             points: strokeData.points,
             color: strokeData.color || '#000000',
             width: strokeData.width || 3,
+            widthRatio: strokeData.widthRatio || null,
             tool: strokeData.tool || 'pen'
         };
 
         session.strokes.push(stroke);
+        return stroke;
+    }
+
+    /**
+     * Efface tous les traits d'une session
+     * @param {string} sessionId
+     * @returns {boolean}
+     */
+    clearStrokes(sessionId) {
+        const session = this.sessions.get(sessionId);
+        if (!session || !session.isActive) return false;
+        session.strokes = [];
         return true;
     }
 

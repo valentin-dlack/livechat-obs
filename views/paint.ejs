@@ -4,42 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveChat - Live Paint !</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/paint.css">
 </head>
-<body>
-    <h1 style="color: black;">Live Paint Session (<%= sessionId %>)</h1>
-    <p style="color: black;">Temps restant <%= session.timeRemaining %></p>
+<body class="paint-page" data-session-id="<%= sessionId %>" data-time-remaining="<%= session.timeRemaining %>">
+    <div class="paint-shell">
+        <header class="paint-header">
+            <div class="paint-title">
+                🎨 Live Paint Session
+                <span class="paint-id">(<%= sessionId %>)</span>
+            </div>
+            <div class="paint-timer">
+                Temps restant : <span id="timeRemaining"></span>
+            </div>
+        </header>
 
-    <canvas id="paintCanvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
+        <section class="paint-toolbar">
+            <div class="tool-group">
+                <span class="tool-label">Couleurs</span>
+                <div class="color-palette" id="colorPalette"></div>
+            </div>
 
-    <script>
-        const canvas = document.getElementById('paintCanvas');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
+            <div class="tool-group">
+                <span class="tool-label">Taille</span>
+                <input id="brushSize" type="range" min="2" max="18" value="5" />
+                <span class="size-value" id="sizeValue">5</span>
+            </div>
 
-        canvas.addEventListener('mousedown', () => {
-            drawing = true;
-        });
+            <div class="tool-group">
+                <button id="eraserToggle" class="tool-button" type="button">Gomme</button>
+                <button id="clearCanvas" class="tool-button" type="button">Effacer tout</button>
+            </div>
+        </section>
 
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
-            ctx.beginPath();
-        });
+        <main class="paint-canvas-wrap">
+            <div class="paint-canvas-frame">
+                <canvas id="paintCanvas"></canvas>
+            </div>
+        </main>
+    </div>
 
-        canvas.addEventListener('mousemove', draw);
-
-        function draw(event) {
-            if (!drawing) return;
-
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#000000';
-
-            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-        }
-    </script>
+    <script src="/paint.js"></script>
 </body>
 </html>

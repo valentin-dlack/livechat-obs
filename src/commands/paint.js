@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import { config } from "../config/config.js";
+import stateManager from "../services/stateManager.js";
 
 export const data = new SlashCommandBuilder()
     .setName('paint')
@@ -8,7 +9,6 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction, commands, paintSessionManager) {
     const channelId = interaction.channelId;
 
-    console.log(paintSessionManager);
     const existingSession = paintSessionManager.getSessionByChannel(channelId);
     if (existingSession) {
         return interaction.reply({
@@ -17,8 +17,33 @@ export async function execute(interaction, commands, paintSessionManager) {
         });
     }
 
-    const onSessionEnd = async () => {
+    const sendToChannel = (payload) => {
+        const clients = stateManager.webSocketClients.get(channelId);
+        if (!clients) return;
+        const data = JSON.stringify(payload);
+        clients.forEach(client => {
+            if (client.readyState === 1) {
+                client.send(data);
+            }
+        });
+    };
+
+    const sendToSession = (sessionId, payload) => {
+        const clients = stateManager.paintWebSocketClients.get(sessionId);
+        if (!clients) return;
+        const data = JSON.stringify(payload);
+        clients.forEach(client => {
+            if (client.readyState === 1) {
+                client.send(data);
+            }
+        });
+    };
+
+    const onSessionEnd = async (sessionId) => {
         try {
+            sendToSession(sessionId, { type: 'paint:end' });
+            sendToChannel({ type: 'paint:end' });
+
             const channel = await interaction.client.channels.fetch(channelId);
             if (channel && channel.isTextBased()) {
                 const embed = new EmbedBuilder()

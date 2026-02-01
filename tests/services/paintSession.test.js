@@ -179,7 +179,7 @@ describe('PaintSessionManager', () => {
             const result = paintSession.addStroke(sessionId, strokeData);
             const session = paintSession.getSession(sessionId);
 
-            expect(result).toBe(true);
+            expect(result).not.toBeNull();
             expect(session.strokes).toHaveLength(1);
             expect(session.strokes[0].points).toEqual(strokeData.points);
             expect(session.strokes[0].color).toBe('#FF0000');
@@ -199,6 +199,7 @@ describe('PaintSessionManager', () => {
 
             expect(session.strokes[0].color).toBe('#000000');
             expect(session.strokes[0].width).toBe(3);
+            expect(session.strokes[0].widthRatio).toBeNull();
             expect(session.strokes[0].tool).toBe('pen');
         });
 
@@ -207,11 +208,29 @@ describe('PaintSessionManager', () => {
             paintSession.endSession(sessionId);
             
             const result = paintSession.addStroke(sessionId, { points: [] });
-            expect(result).toBe(false);
+            expect(result).toBeNull();
         });
 
         it('should return false for invalid session', () => {
             const result = paintSession.addStroke('invalid-id', { points: [] });
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('clearStrokes', () => {
+        it('should clear strokes for active session', () => {
+            const { sessionId } = paintSession.createSession('channel-123');
+            paintSession.addStroke(sessionId, { points: [{ x: 0, y: 0 }, { x: 1, y: 1 }] });
+
+            const result = paintSession.clearStrokes(sessionId);
+            const session = paintSession.getSession(sessionId);
+
+            expect(result).toBe(true);
+            expect(session.strokes).toHaveLength(0);
+        });
+
+        it('should return false for invalid session', () => {
+            const result = paintSession.clearStrokes('invalid-id');
             expect(result).toBe(false);
         });
     });
