@@ -4,9 +4,15 @@ import {jest} from '@jest/globals'
 
 describe('CommandHandler', () => {
     let commandHandler;
+    let mockPaintSessionManager;
 
     beforeEach(() => {
-        commandHandler = new CommandHandler();
+        mockPaintSessionManager = {
+            createSession: jest.fn(),
+            getSession: jest.fn(),
+            endSession: jest.fn()
+        };
+        commandHandler = new CommandHandler({ paintSessionManager: mockPaintSessionManager });
     });
 
     describe('register', () => {
@@ -57,7 +63,7 @@ describe('CommandHandler', () => {
             commandHandler.register('test', mockCommand);
             await commandHandler.handle(mockInteraction);
 
-            expect(mockExecute).toHaveBeenCalledWith(mockInteraction, expect.any(Array));
+            expect(mockExecute).toHaveBeenCalledWith(mockInteraction, expect.any(Array), mockPaintSessionManager);
         });
 
         it('should handle non-existent command', async () => {
